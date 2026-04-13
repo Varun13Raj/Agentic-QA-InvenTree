@@ -49,7 +49,7 @@ def test_successful_login(page: Page):
 
     # Assertion 1: Verify URL has changed (no longer on login page)
     current_url = login_page.get_current_url()
-    assert "/accounts/login/" not in current_url, \
+    assert "/web/login" not in current_url, \
         f"Still on login page after login attempt. Current URL: {current_url}"
 
     # Assertion 2: Verify we're on a valid InvenTree page (not login)
@@ -83,7 +83,7 @@ def test_successful_login_with_explicit_credentials(page: Page):
 
     # Verify login success by checking URL
     current_url = page.url
-    assert "/accounts/login/" not in current_url, \
+    assert "/web/login" not in current_url, \
         "Login failed - still on login page"
 
 
@@ -144,11 +144,11 @@ def test_login_with_invalid_credentials(page: Page, username, password, should_f
         # Verify still on login page or error is shown
         current_url = login_page.get_current_url()
         # Either still on login page OR error message is displayed
-        is_still_on_login = "/accounts/login/" in current_url
+        is_still_on_login = "/web/login" in current_url or "/login" in current_url
         has_error = login_page.is_error_displayed()
 
         assert is_still_on_login or has_error, \
-            "Expected login to fail but no error detected"
+            f"Expected login to fail but no error detected. URL: {current_url}"
 
 
 def test_login_form_submission_with_enter_key(page: Page):
@@ -176,7 +176,7 @@ def test_login_form_submission_with_enter_key(page: Page):
 
     # Verify login success
     current_url = login_page.get_current_url()
-    assert "/accounts/login/" not in current_url, \
+    assert "/web/login" not in current_url, \
         "Login with Enter key failed"
 
 

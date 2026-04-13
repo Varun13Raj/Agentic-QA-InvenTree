@@ -14,19 +14,19 @@ class LoginPage(BasePage):
     Inherits from BasePage to access common Playwright wrapper methods.
     """
 
-    # Page URL
-    LOGIN_URL = "https://demo.inventree.org/accounts/login/"
+    # Page URL (Corrected after inspection - InvenTree demo uses /web/login)
+    LOGIN_URL = "https://demo.inventree.org/web/login"
 
-    # Locators
-    USERNAME_INPUT = "input[name='username']"
-    PASSWORD_INPUT = "input[name='password']"
-    LOGIN_BUTTON = "button[type='submit']"
-    ERROR_MESSAGE = ".alert-danger, .errorlist"
+    # Locators (InvenTree uses Mantine UI with dynamic IDs, use stable selectors)
+    USERNAME_INPUT = "input[placeholder='Your username']"
+    PASSWORD_INPUT = "input[type='password']"
+    LOGIN_BUTTON = "button[type='submit']:has-text('Log In')"
+    ERROR_MESSAGE = ".mantine-Alert-root, .error-message, [role='alert']"
 
-    # Alternative locators (in case the above don't work)
-    USERNAME_ALT = "#id_username"
-    PASSWORD_ALT = "#id_password"
-    SUBMIT_ALT = "input[type='submit'], button:has-text('Login'), button:has-text('Sign in')"
+    # Alternative locators
+    USERNAME_ALT = "input[placeholder*='username' i]"
+    PASSWORD_ALT = "input[placeholder='Your password']"
+    SUBMIT_ALT = "button:has-text('Log In')"
 
     def __init__(self, page):
         """
@@ -40,9 +40,13 @@ class LoginPage(BasePage):
     def navigate(self):
         """
         Navigate to the InvenTree demo login page.
+
+        Waits for network idle to ensure Mantine UI components are fully loaded.
         """
         self.navigate_to(self.LOGIN_URL)
-        self.wait_for_load_state("domcontentloaded")
+        self.wait_for_load_state("networkidle")
+        # Additional wait for dynamic Mantine UI components to render
+        self.page.wait_for_timeout(2000)
 
     def login(self, username: str, password: str):
         """
@@ -92,7 +96,9 @@ class LoginPage(BasePage):
         Returns:
             bool: True if login form is visible, False otherwise
         """
-        return self.is_visible(self.USERNAME_INPUT) and self.is_visible(self.PASSWORD_INPUT)
+        # Use longer timeout for Mantine UI dynamic rendering
+        return self.is_visible(self.USERNAME_INPUT, timeout=10000) and \
+               self.is_visible(self.PASSWORD_INPUT, timeout=10000)
 
     def get_error_message(self) -> str:
         """
