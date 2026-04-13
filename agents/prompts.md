@@ -18,3 +18,17 @@ Inside automation/api/tests/, create a file named conftest.py. Write a pytest fi
 
 ### Step 3: Implement API Test Automation
 Inside automation/api/tests/, create a file named test_parts_api.py. Write executable API automation scripts using pytest and requests to cover CRUD operations on Parts. You must include @pytest.mark.parametrize to demonstrate data-driven testing, and include assertions on status codes and response schemas.
+
+## UI Automation Setup Workflow
+
+### Step 1: Create UI Automation Dependencies
+Create a requirements.txt file inside the automation/ui/ folder containing "playwright" and "pytest-playwright". Then, create two new directories inside automation/ui/ named "pages" and "tests".
+
+### Step 2: Create BasePage with Playwright Utilities
+Inside automation/ui/pages/, create a file named base_page.py with a BasePage class containing common Playwright wrapper methods initialized with a page fixture (e.g., wait_for_selector, click_element using page.locator().click(), and enter_text using page.locator().fill()).
+
+### Step 3: Create LoginPage Implementation
+Inside automation/ui/pages/, create a file named login_page.py with a LoginPage class that inherits from BasePage, navigates to "https://demo.inventree.org/accounts/login/", and handles a basic login action.
+
+### Step 4: Implement Login Tests
+Inside automation/ui/tests/, create a file named test_login.py. Write a pytest function named test_successful_login that uses the Playwright page fixture from pytest-playwright. Import the LoginPage class, instantiate it with the page fixture, navigate to the URL, and call the login method using the InvenTree demo credentials. Finally, add an assertion to verify the login was successful, such as checking that the page URL has changed or that a dashboard element is visible.

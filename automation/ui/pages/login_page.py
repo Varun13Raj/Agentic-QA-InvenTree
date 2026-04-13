@@ -4,7 +4,7 @@ Login Page Object Model for InvenTree demo instance.
 This module provides a LoginPage class that handles login functionality
 for the InvenTree demo environment.
 """
-from pages.base_page import BasePage
+from automation.ui.pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
