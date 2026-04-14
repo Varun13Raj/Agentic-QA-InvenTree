@@ -48,12 +48,19 @@ def test_successful_login(page: Page):
     login_page.login_with_demo_credentials()
 
     # Assertion 1: Verify URL has changed (no longer on login page)
+    # Accept both dashboard redirect AND MFA setup page as successful login
     current_url = login_page.get_current_url()
-    assert "/web/login" not in current_url, \
+    login_successful = "/web/login" not in current_url
+    assert login_successful, \
         f"Still on login page after login attempt. Current URL: {current_url}"
 
+    # Note: Local InvenTree may redirect to /mfa-setup after login, which is valid
+    if "/mfa-setup" in current_url:
+        print("   [INFO] Redirected to MFA setup page (indicates successful authentication)")
+
     # Assertion 2: Verify we're on a valid InvenTree page (not login)
-    assert "demo.inventree.org" in current_url, \
+    # Accept both localhost (local Docker) and demo.inventree.org domains
+    assert "localhost" in current_url or "demo.inventree.org" in current_url, \
         f"Not on InvenTree domain. Current URL: {current_url}"
 
     # Additional assertion: Check page title changed
@@ -81,7 +88,10 @@ def test_successful_login_with_explicit_credentials(page: Page):
     # Login with explicit credentials
     login_page.login("admin", "inventree")
 
-    # Verify login success by checking URL
+    # Handle MFA setup if present
+    login_page.handle_mfa_setup_if_present()
+
+    # Verify login success by checking URL (accept MFA setup page as success)
     current_url = page.url
     assert "/web/login" not in current_url, \
         "Login failed - still on login page"
@@ -174,7 +184,10 @@ def test_login_form_submission_with_enter_key(page: Page):
     # Submit using Enter key
     login_page.submit_login_form()
 
-    # Verify login success
+    # Handle MFA setup if present
+    login_page.handle_mfa_setup_if_present()
+
+    # Verify login success (accept MFA setup page as success)
     current_url = login_page.get_current_url()
     assert "/web/login" not in current_url, \
         "Login with Enter key failed"

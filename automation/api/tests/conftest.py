@@ -9,13 +9,13 @@ def base_url():
     """
     Provides the base URL for InvenTree API endpoint.
 
-    Using the official InvenTree demo environment for testing.
-    This allows testing against a live instance without local setup.
+    Using the local Docker InvenTree instance for testing.
+    Ensure Docker container is running: docker compose up -d
 
     Returns:
-        str: Base API URL for InvenTree demo instance
+        str: Base API URL for local InvenTree instance
     """
-    return "https://demo.inventree.org/api/"
+    return "http://localhost:8000/api/"
 
 
 @pytest.fixture(scope="session")
@@ -41,7 +41,9 @@ def basic_auth():
     """
     Provides basic authentication tuple for requests.
 
+    Uses the default credentials for local Docker InvenTree instance.
+
     Returns:
         tuple: (username, password) for basic auth
     """
-    return ("admin", "admin")
+    return ("admin", "inventree")
